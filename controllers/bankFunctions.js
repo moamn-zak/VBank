@@ -96,13 +96,13 @@ exports.createBankAccount = (req, res, next) =>
 
 
 
+
+
 exports.pay = async (req, res, next) =>
 {
-    const { senderAccNum, receiverAccNum, amount } = req.body;
-
     try
     {
-
+        const { senderAccNum, receiverAccNum, amount } = req.body;
 
         const sender = await BankAccount.findOne({ accountNumber: senderAccNum });
         const receiver = await BankAccount.findOne({ accountNumber: receiverAccNum });
@@ -116,9 +116,16 @@ exports.pay = async (req, res, next) =>
             throw new Error('Bank account not found');
         }
 
+        let financialError = null;
+
         if (sender.balance < amount)
         {
-            throw new Error('Insufficient balance');
+            financialError = 'Insufficient balance';
+        }
+
+        if (financialError)
+        {
+            return res.status(400).json({ message: financialError }); // Use "return" here to exit the function
         }
 
         sender.balance -= amount;
@@ -135,16 +142,80 @@ exports.pay = async (req, res, next) =>
         await receiver.save();
 
         res.status(200).json({
-            message: 'transaction successfully!',
+            message: 'Transaction successful!',
             transaction: transaction,
         });
-    }
-    catch (error)
+    } catch (error)
     {
         next(error); // Pass the error to the error handling middleware
     }
+};
 
-}
+
+
+
+
+
+// exports.pay = async (req, res, next) =>
+// {
+//     let financialError = null;
+
+//     const { senderAccNum, receiverAccNum, amount } = req.body;
+
+//     try
+//     {
+
+
+//         const sender = await BankAccount.findOne({ accountNumber: senderAccNum });
+//         const receiver = await BankAccount.findOne({ accountNumber: receiverAccNum });
+
+//         if (!sender)
+//         {
+//             throw new Error('Bank account not found');
+//         }
+//         if (!receiver)
+//         {
+//             throw new Error('Bank account not found');
+//         }
+
+//         if (sender.balance < amount + 99999999999)
+//         {
+//             financialError = 'Insufficient balance';
+//             // throw new Error('Insufficient balance');
+//         }
+
+//         sender.balance -= amount;
+//         receiver.balance += amount;
+
+//         const transaction = new Transaction({
+//             sender: sender._id,
+//             receiver: receiver._id,
+//             amount: amount,
+//         });
+//         if (financialError)
+//         {
+//             res.status(400).json({ message: financialError });
+//             throw new Error('Insufficient balance');// يمكن تغيير الكود الاستجابي ورمي الاستثناء الخاص بالحالة المالية هنا
+//         } else
+//         {
+//             await transaction.save();
+//             await sender.save();
+//             await receiver.save();
+
+//             res.status(200).json({
+//                 message: 'transaction successfully!',
+//                 transaction: transaction,
+//             });
+//         }
+
+
+//     }
+//     catch (error)
+//     {
+//         next(error); // Pass the error to the error handling middleware
+//     }
+
+// }
 
 
 exports.getBalance = async (req, res, next) =>
