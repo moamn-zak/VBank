@@ -220,26 +220,27 @@ exports.pay = async (req, res, next) =>
 
 exports.getBalance = async (req, res, next) =>
 {
-    const accountId = req.params.accountId; // Get the accountId from the URL parameter
+    const accountnum = req.params.accountnum;
 
     try
     {
-        const account = await BankAccount.findById(accountId);
+        const account = await BankAccount.findOne({ accountNumber: accountnum });
 
         if (!account)
         {
             throw new Error('Bank account not found');
         }
-
+        // console.log(account);
         res.status(200).json({
             message: 'Bank account retrieved successfully!',
-            account: account.balance,
+            balance: account.balance,
         });
     } catch (error)
     {
-        next(error); // Pass the error to the error handling middleware
+        next(error);
     }
 };
+
 exports.getAccounts = async (req, res, next) =>
 {
     // const accountId = req.params.accountId; // Get the accountId from the URL parameter
