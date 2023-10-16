@@ -32,12 +32,12 @@ exports.createBankAccount = (req, res, next) =>
     BankAccount.find({ accountNumber: accountNumber })
         .then(accountNumb =>
         {
-            console.log(accountNumb.accountNumber);
+            // console.log(accountNumb.accountNumber);
             if (accountNumb)
             {
                 return accountNumber = 'sabcza00' + randomInt(9999999);
             }
-            console.log(accountNumb.accountNumber);
+            // console.log(accountNumb.accountNumber);
 
         }).then(accountNumb =>
         {
