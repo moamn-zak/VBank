@@ -103,6 +103,7 @@ exports.pay = async (req, res, next) =>
     try
     {
         const { senderAccNum, receiverAccNum, amount } = req.body;
+        //const nam = req.body.name;
 
         const sender = await BankAccount.findOne({ accountNumber: senderAccNum });
         const receiver = await BankAccount.findOne({ accountNumber: receiverAccNum });
